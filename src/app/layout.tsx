@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto_Slab, Roboto } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 const robotoHeading = Roboto({subsets:['latin'],variable:'--font-heading'});
 
