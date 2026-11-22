@@ -1,9 +1,9 @@
 "use server";
 
-import {createClient} from "@/src/lib/supabase/server";
+import {createClient} from "@/server/supabase/server";
 import {redirect} from "next/navigation";
 import {revalidatePath} from "next/cache";
-import {signupSchema} from "@/lib/validations/schema";
+import {signupSchema} from "@/lib/schemas";
 
 export type SigninState = {
   success: boolean;

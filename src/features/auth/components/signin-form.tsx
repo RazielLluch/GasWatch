@@ -1,23 +1,23 @@
 "use client";
 
 import React, {useState, useActionState} from "react";
-import { cn } from "@/src/lib/utils"
-import { Button } from "@/src/components/ui/button"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/src/components/ui/card"
+} from "@/components/ui/card"
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-} from "@/src/components/ui/field"
-import { Input } from "@/src/components/ui/input"
-import {signin, SigninState} from "@/src/lib/auth-actions";
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import {signin, SigninState} from "@/features/auth/auth-actions";
 import Link from "next/link";
 
 const initialState: SigninState = {
