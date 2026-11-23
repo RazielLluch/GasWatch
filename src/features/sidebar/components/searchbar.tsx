@@ -37,7 +37,7 @@ const SearchBar: FC<SearchBarProps> = ({ onSearch }) => {
       }}
     >
       <form
-        className="flex h-14 items-center rounded-full border border-border/60 bg-background text-sm shadow-lg"
+        className="flex h-14 items-center rounded-full border border-border/60 bg-background text-sm shadow-lg pl-1 pr-1"
         onSubmit={(event) => {
           event.preventDefault();
           handleSubmit();

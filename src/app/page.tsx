@@ -11,7 +11,7 @@ const LeafletMap = dynamic(
 export default function Home() {
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden">
+    <div className="relative h-dvh w-dvw overflow-hidden overscroll-none">
       <div id="map" className="absolute inset-0 z-0">
         <LeafletMap />
       </div>

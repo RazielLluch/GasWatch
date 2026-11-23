@@ -12,12 +12,12 @@ export function Sidebar(){
   return (
     <div
       id="sidebar"
-      className="flex pointer-events-none h-full z-10"
+      className="flex pointer-events-none h-dvh z-10"
     >
       <div className="flex">
         <nav
           id="navbar"
-          className="flex pointer-events-auto h-full w-20 flex-col items-center border border-border/60 bg-background/95 py-3 shadow-lg backdrop-blur"
+          className="flex pointer-events-auto h-dvh w-20 flex-col items-center border border-border/60 bg-background/95 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] shadow-lg backdrop-blur"
           aria-label="Main navigation"
         >
           <button
