@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import {Sidebar} from "@/features/sidebar/components/sidebar";
 
 const LeafletMap = dynamic(
-  () => import("@/components/map/LeafletMap"),
+  () => import("@/features/map/LeafletMap"),
   { ssr: false },
 );
 
