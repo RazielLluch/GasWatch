@@ -21,40 +21,9 @@ export type StationFilter = {
 export async function getActiveStations(
   filter: StationFilter = {},
 ): Promise<MapStation[]> {
-  const rows = await db
-    .select({
-      id: stationsWithCoords.id,
-      name: stationsWithCoords.name,
-      address: stationsWithCoords.address,
-      city: stationsWithCoords.city,
-      lat: stationsWithCoords.lat,
-      lng: stationsWithCoords.lng,
-    })
-    .from(stationsWithCoords)
-    .where(
-      filter.city
-        ? and(
-            eq(stationsWithCoords.status, "active"),
-            ilike(stationsWithCoords.city, filter.city),
-          )
-        : eq(stationsWithCoords.status, "active"),
-    );
+  const rows = await getCachedActiveStations(filter.city);
 
   return rows
-    .filter(
-      (row): row is MapStation =>
-        row.id !== null &&
-        row.name !== null &&
-        row.lat !== null &&
-        row.lng !== null &&
-        Number.isFinite(row.lat) &&
-        Number.isFinite(row.lng),
-    )
-    .map((row) => ({
-      ...row,
-      lat: Number(row.lat),
-      lng: Number(row.lng),
-    }))
     .filter((row) => {
       if (filter.lat === undefined || filter.lng === undefined) {
         return true;
@@ -67,6 +36,79 @@ export async function getActiveStations(
         row.lng,
       ) <= (filter.radiusKm ?? 25);
     });
+}
+
+type CacheEntry = {
+  expiresAt: number;
+  promise: Promise<MapStation[]>;
+};
+
+const stationCache = new Map<string, CacheEntry>();
+const stationCacheTtlMs = 5 * 60 * 1000;
+
+async function getCachedActiveStations(city?: string): Promise<MapStation[]> {
+  const cacheKey = city?.toLocaleLowerCase("en") ?? "";
+  const cached = stationCache.get(cacheKey);
+
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.promise;
+  }
+
+  const promise = loadActiveStations(city);
+  void promise.catch(() => {
+    if (stationCache.get(cacheKey)?.promise === promise) {
+      stationCache.delete(cacheKey);
+    }
+  });
+
+  stationCache.set(cacheKey, {
+    expiresAt: Date.now() + stationCacheTtlMs,
+    promise,
+  });
+
+  return promise;
+}
+
+async function loadActiveStations(city?: string): Promise<MapStation[]> {
+  const rows = await db
+    .select({
+      id: stationsWithCoords.id,
+      name: stationsWithCoords.name,
+      address: stationsWithCoords.address,
+      city: stationsWithCoords.city,
+      lat: stationsWithCoords.lat,
+      lng: stationsWithCoords.lng,
+    })
+    .from(stationsWithCoords)
+    .where(
+      city
+        ? and(
+            eq(stationsWithCoords.status, "active"),
+            ilike(stationsWithCoords.city, city),
+          )
+        : eq(stationsWithCoords.status, "active"),
+    );
+
+  return rows
+    .filter(
+      (row): row is typeof row & {
+        id: string;
+        name: string;
+        lat: number;
+        lng: number;
+      } =>
+        row.id !== null &&
+        row.name !== null &&
+        row.lat !== null &&
+        row.lng !== null &&
+        Number.isFinite(row.lat) &&
+        Number.isFinite(row.lng),
+    )
+    .map((row) => ({
+      ...row,
+      lat: Number(row.lat),
+      lng: Number(row.lng),
+    }));
 }
 
 function haversineKm(
