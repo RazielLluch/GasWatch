@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Roboto_Slab, Roboto } from "next/font/google";
+import { Geist, Geist_Mono, Roboto_Slab, Roboto, Inter } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import { cn } from "@/src/lib/utils";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const robotoHeading = Roboto({subsets:['latin'],variable:'--font-heading'});
 
@@ -33,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-serif", robotoSlab.variable, robotoHeading.variable)}
+      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, robotoSlab.variable, robotoHeading.variable, "font-sans", inter.variable)}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
