@@ -1,16 +1,22 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import {Sidebar} from "@/features/sidebar/components/sidebar";
 
 const LeafletMap = dynamic(
-  () => import("@/src/components/map/LeafletMap"),
+  () => import("@/components/map/LeafletMap"),
   { ssr: false },
 );
 
 export default function Home() {
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <LeafletMap />
+    <div className="relative h-screen w-screen overflow-hidden">
+      <div id="map" className="absolute inset-0 z-0">
+        <LeafletMap />
+      </div>
+
+      <Sidebar />
     </div>
   );
 }
