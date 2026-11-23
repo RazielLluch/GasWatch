@@ -1,4 +1,5 @@
-import {HeartCrack} from "lucide-react";
+import { HeartCrack } from "lucide-react";
+import { Suspense } from "react";
 
 const defaultMessages: Record<string, string> = {
   // 4xx Client Errors
@@ -38,30 +39,52 @@ const defaultMessages: Record<string, string> = {
 };
 
 type ErrorProps = {
-  success: boolean;
-  status: string | number;
-  message?: string;
+  success?: boolean;
+  status?: string | string[];
+  message?: string | string[];
+};
+
+async function ErrorDetails({ searchParams }: { searchParams: Promise<ErrorProps> }) {
+  const params = await searchParams;
+  const statusValue = Array.isArray(params.status) ? params.status[0] : params.status;
+  const status = statusValue ?? "500";
+  const messageValue = Array.isArray(params.message) ? params.message[0] : params.message;
+  const message =
+    messageValue ?? defaultMessages[status] ?? "An unexpected error occurred.";
+
+  return (
+    <>
+      <h1 className="text-8xl font-bold tabular-nums">{status}</h1>
+      <p className="mt-4 text-justify text-lg text-muted-foreground max-w-50">
+        <span className="font-semibold">Sorry, something went wrong:</span> <q>{message}</q>
+      </p>
+    </>
+  );
 }
 
-export default async function ErrorPage({
-  searchParams
-}: { searchParams: Promise<ErrorProps> }) {
-
-  const { status: inputStatus, message: inputMessage } = await searchParams;
-
-  const status = inputStatus ?? "500";
-  const message =
-    inputMessage ?? defaultMessages[status] ?? "An unexpected error occurred.";
-
+export default function ErrorPage({
+  searchParams,
+}: {
+  searchParams: Promise<ErrorProps>;
+}) {
   return (
     <div className="flex flex-row h-screen items-center justify-center gap-8 p-10">
       <div className="flex flex-col h-screen items-center justify-center">
-        <h1 className="text-8xl font-bold tabular-nums">{status}</h1>
-        <p className="mt-4 text-justify text-lg text-muted-foreground max-w-50">
-          <span className="font-semibold">Sorry, something went wrong:</span> <q>{message}</q>
-        </p>
+        <Suspense
+          fallback={
+            <>
+              <h1 className="text-8xl font-bold tabular-nums">500</h1>
+              <p className="mt-4 text-justify text-lg text-muted-foreground max-w-50">
+                <span className="font-semibold">Sorry, something went wrong:</span>{" "}
+                <q>Loading error details...</q>
+              </p>
+            </>
+          }
+        >
+          <ErrorDetails searchParams={searchParams} />
+        </Suspense>
       </div>
-      <HeartCrack className="w-50 h-50"/>
+      <HeartCrack className="w-50 h-50" />
     </div>
-  )
+  );
 }
